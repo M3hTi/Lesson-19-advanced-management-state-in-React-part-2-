@@ -72,7 +72,7 @@ function reducer(state,action) {
     case 'product-fetch' :
       return {result : action.payload, isLoading: false , isError: false};
     case 'product-fetch-error':
-      return {result: [], isLoading: false, isError: true}
+      return {result: [], isLoading: false, isError: action.payload}
     case 'Remove_item':
       const newArr = state.result.filter(product => product.id !== action.payload);
       return {result: newArr, isLoading: false, isError: false}
@@ -97,9 +97,13 @@ function App() {
       dispatchProducts({type: 'product-fetch', payload: response.data.information })
     })
     .catch(error => {
-      console.log(error);
+      dispatchProducts({type: 'product-fetch-error', payload : error.message});
     });
   },[])
+
+  if(data.isError){
+    return <p>something wrong...</p>
+  }
   
   return (
     <>
