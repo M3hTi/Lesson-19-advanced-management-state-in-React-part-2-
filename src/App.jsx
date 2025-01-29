@@ -56,11 +56,26 @@ const products = [
 
 
 function getAsyncProducts(){
-  const asyncProducts = new Promise((resolve, reject) => {
-    setTimeout(
-      resolve({data : { information : products}}, 5000)
-    )
-  })
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({data : { information : products}});
+    }, 5000);
+  });
+}
+
+
+
+function reducer(state,action) {
+  switch (action.type) {
+    case 'product-loading' :
+      return {result:  [], isLoading : true, isError: false};
+    case 'product-fetch' :
+      return {result : action.payload, isLoading: false , isError: false};
+    case 'product-fetch-error':
+      return {result: [], isLoading: false, isError: true}
+    default:
+      return state;
+  }
 }
 
 function App() {
@@ -69,11 +84,42 @@ function App() {
     isLoading : false,
     isError: false 
   }
+
+
+  const [data, dispatchProducts] = React.useReducer(reducer, intialProducts)
+
+  React.useEffect(() => {
+    dispatchProducts({type: 'product-loading' })
+    getAsyncProducts().then(response  => {
+      dispatchProducts({type: 'product-fetch', payload: response.data.information })
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  },[])
+  
   return (
     <>
-      
+      {data.isLoading ? (<span className="loader"></span>) : (<List items={data.result} />)}
     </>
   )
+}
+
+
+function List({items}) {
+  return (
+    <div className="product-list">
+      {items.map(item => {
+        const {id, name, price} = item
+        return(
+          <div key={id} className="product-item">
+            <h3>{name}</h3>
+            <p>{price.toLocaleString('en-US', {style: 'currency', currency: 'USD'})}</p>
+          </div>
+        )
+      })}
+    </div>
+  );
 }
 
 export default App
