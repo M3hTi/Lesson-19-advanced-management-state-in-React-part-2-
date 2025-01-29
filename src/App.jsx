@@ -73,6 +73,9 @@ function reducer(state,action) {
       return {result : action.payload, isLoading: false , isError: false};
     case 'product-fetch-error':
       return {result: [], isLoading: false, isError: true}
+    case 'Remove_item':
+      const newArr = state.result.filter(product => product.id !== action.payload);
+      return {result: newArr, isLoading: false, isError: false}
     default:
       return state;
   }
@@ -100,13 +103,13 @@ function App() {
   
   return (
     <>
-      {data.isLoading ? (<span className="loader"></span>) : (<List items={data.result} />)}
+      {data.isLoading ? (<span className="loader"></span>) : (<List items={data.result} onDispatch={dispatchProducts} />)}
     </>
   )
 }
 
 
-function List({items}) {
+function List({items,onDispatch}) {
   return (
     <div className="product-list">
       {items.map(item => {
@@ -115,6 +118,7 @@ function List({items}) {
           <div key={id} className="product-item">
             <h3>{name}</h3>
             <p>{price.toLocaleString('en-US', {style: 'currency', currency: 'USD'})}</p>
+            <button onClick={() => onDispatch({type: 'Remove_item', payload: id})}>Delete</button>
           </div>
         )
       })}
