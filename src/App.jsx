@@ -58,7 +58,7 @@ const products = [
 function getAsyncProducts(){
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve({data : { information : products}});
+      resolve({data: {information: products}});
     }, 5000);
   });
 }
@@ -101,8 +101,13 @@ function App() {
     });
   },[])
 
-  if(data.isError){
-    return <p>something wrong...</p>
+  if(data.isError) {
+    return (
+      <div style={{ color: 'white', textAlign: 'center' }}>
+        <h2>Error</h2>
+        <p>{data.isError}</p>
+      </div>
+    );
   }
   
   return (
